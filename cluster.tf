@@ -1,8 +1,8 @@
 resource "aws_docdb_cluster" "docdb" {
   cluster_identifier = "roboshop-${var.ENV}"
   engine             = "docdb"
-  master_username    = local.USERNAME
-  master_password    = local.PASSWORD
+  master_username    = "admin1"
+  master_password    = "roboshop1"
   ## This is just for lab purpose
   skip_final_snapshot    = true
   db_subnet_group_name   = aws_docdb_subnet_group.docdb.name
@@ -19,10 +19,10 @@ resource "aws_docdb_subnet_group" "docdb" {
 }
 
 resource "aws_docdb_cluster_instance" "cluster_instances" {
-  count              = var.DOCUMENTDB_INSTANCE_COUNT
+  count              = 1
   identifier         = "roboshop-${var.ENV}"
   cluster_identifier = aws_docdb_cluster.docdb.id
-  instance_class     = var.DOCUMENTDB_INSTANCE_CLASS
+  instance_class     = "db.t3.medium"
 }
 
 resource "aws_security_group" "allow_mongodb" {
@@ -32,8 +32,8 @@ resource "aws_security_group" "allow_mongodb" {
 
   ingress {
     description = "TLS from VPC"
-    from_port   = var.DOCUMENTDB_PORT
-    to_port     = var.DOCUMENTDB_PORT
+    from_port   = 27017
+    to_port     = 27017
     protocol    = "tcp"
     cidr_blocks = [data.terraform_remote_state.vpc.outputs.VPC_CIDR, var.WORKSTATION_IP]
   }
